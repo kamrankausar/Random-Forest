@@ -1,0 +1,18 @@
+https://stackoverflow.com/questions/34624978/is-there-easy-way-to-grid-search-without-cross-validation-in-python
+
+
+ I would really advise against using OOB to evaluate a model,
+ but it is useful to know how to run a grid search outside of GridSearchCV() 
+ (I frequently do this so I can save the CV predictions from the best grid for easy model stacking). 
+ I think the easiest way is to create your grid of parameters via ParameterGrid() and then just loop through every set of params. 
+ For example assuming you have a grid dict, named "grid", and RF model object, named "rf", then you can do something like this:
+ for g in ParameterGrid(grid):
+    rf.set_params(**g)
+    rf.fit(X,y)
+    # save if best
+    if rf.oob_score_ > best_score:
+        best_score = rf.oob_score_
+        best_grid = g
+
+print "OOB: %0.5f" % best_score 
+print "Grid:", best_grid
